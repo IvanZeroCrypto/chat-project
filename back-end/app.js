@@ -1,4 +1,5 @@
 import express from "express";
+import dotenv from "dotenv";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -6,21 +7,23 @@ import router from "./router/router.js";
 import cookieParser from "cookie-parser";
 import prisma from "./prisma/prisma-client.js";
 import { userInfo } from "os";
+dotenv.config();
+const PORT = process.env.PORT || 7000;
 
 const app = express();
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://chat-project-topaz.vercel.app"],
   })
 );
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api", router);
+app.use(router);
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://chat-project-topaz.vercel.app"],
     methods: ["GET", "POST", "DELETE"],
   },
 });
@@ -48,20 +51,6 @@ io.on("connection", (socket) => {
   socket.on("ROOM:JOIN", async ({ userName, roomId, userId }) => {
     if ((userName, roomId, userId)) {
       socket.join(roomId);
-
-      //   where: {
-      //     id: roomId,
-      //   },
-      //   include: {
-      //     users: {
-      //       select: {
-      //         id: true,
-      //         userName: true,
-      //       },
-      //     },
-      //   },
-      // });
-      // console.log(`пользователь${userName} присоединился к комнате`);
     }
   });
   socket.on(
@@ -176,7 +165,7 @@ async function notifyFriends(soketId, userId) {
 
 const start = () => {
   try {
-    server.listen(5000, () => {
+    server.listen(PORT, "0.0.0.0", () => {
       console.log("Server started");
     });
   } catch (error) {
