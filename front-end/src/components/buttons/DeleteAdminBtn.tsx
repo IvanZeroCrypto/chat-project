@@ -1,4 +1,4 @@
-import React, { type FC } from "react";
+import { type FC } from "react";
 import { FaUserAltSlash } from "react-icons/fa";
 interface DeleteAdminBtnProps {
   onClick: () => void;
