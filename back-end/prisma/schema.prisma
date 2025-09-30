@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id           String   @id @default(uuid())
+  userName     String   @unique
+  email        String   @unique
+  password     String
+  
+  identificationId     Int?  @unique 
+  refreshToken String?
+  
+  rooms        Room[]   @relation("RoomToUser")
+  adminRooms   Room[]   @relation("RoomToAdmin")
+  ownerRooms   Room[]   @relation("RoomToOwner")
+ 
+  messages     Message[]
+
+  sentFriendRequests     FriendRequest[] @relation("SentRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedRequests")
+
+  friends User[] @relation("UserFriends")
+  
+  createdAt    DateTime @default(now())
+  updateAt    DateTime? @updatedAt
+
+
+
+  User User[] @relation("UserFriends")
+
+ 
+}
+
+model Room {
+  id          String    @id @default(uuid())
+  name        String?  
+  users       User[]    @relation("RoomToUser")
+  admins      User[]    @relation("RoomToAdmin")
+  owner       User?     @relation("RoomToOwner", fields: [ownerId], references: [id])
+  ownerId     String?
+
+  messages    Message[]  
+  private     Boolean?   @default(false)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  text      String  
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String? 
+  
+  room      Room?    @relation(fields: [roomId], references: [id])
+  roomId    String? 
+
+  createdAt DateTime @default(now())
+}
+model FriendRequest{
+  id          Int       @id @default(autoincrement())
+  from        User      @relation("SentRequests", fields: [fromId], references: [id])
+  fromId      String
+  to          User      @relation("ReceivedRequests", fields: [toId], references: [id])
+  toId        String
+  status      RequestStatus @default(PENDING)
+  createdAt   DateTime  @default(now())
+  
+  @@unique([fromId, toId])
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
