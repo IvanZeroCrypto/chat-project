@@ -1,7 +1,9 @@
 import axios from "axios";
 import AuthService from "./services/AuthService";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = import.meta.env.PROD
+  ? "https://chat-project-zuw8.onrender.com"
+  : "http://localhost:5000/api";
 
 export const api = axios.create({
   withCredentials: true,
