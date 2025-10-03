@@ -14,7 +14,10 @@ const app = express();
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:5173", "https://chat-project-topaz.vercel.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://chat-project-gilt-eight.vercel.app",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -25,7 +28,10 @@ app.use(router);
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "https://chat-project-topaz.vercel.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://chat-project-gilt-eight.vercel.app",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   },
